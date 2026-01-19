@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IntaSend Custom Amount Payment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- IntaSend SDK -->
+<script src="https://unpkg.com/intasend-inlinejs-sdk@4.0.5/build/intasend-inline.js"></script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.payment-box {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  width: 320px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+button {
+  background: #0066ff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #004fd1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="payment-box">
+  <h3>Contribute Any Amount</h3>
+
+  <input type="number" id="amount" placeholder="Enter amount (KES)" min="10" required>
+  <input type="email" id="email" placeholder="Email address" required>
+  <input type="tel" id="phone" placeholder="2547XXXXXXXX" required>
+
+  <button onclick="payNow()">Pay Now</button>
+</div>
+
+<script>
+const intaSend = new IntaSend({
+  publicAPIKey: "ISPubKey_live_79fff6a0-2a9e-4e38-b442-d00c56a58789",
+  live: true
+});
+
+intaSend
+  .on("COMPLETE", function (response) {
+    console.log("Payment success:", response);
+    window.location.href = "https://a-finder.vercel.app"; // ✅ custom redirect
+  })
+  .on("FAILED", function (response) {
+    alert("Payment failed. Please try again.");
+    console.error(response);
+  });
+
+function payNow() {
+  const amount = document.getElementById("amount").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+
+  if (!amount || amount < 10) {
+    alert("Minimum amount is KES 10");
+    return;
+  }
+
+  intaSend.open({
+    amount: amount,
+    currency: "KES",
+    email: email,
+    phone_number: phone,
+    api_ref: "CONTRIB-" + Date.now()
+  });
+}
+</script>
+
+</body>
+</html>
